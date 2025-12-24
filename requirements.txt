@@ -1,0 +1,12 @@
+flask
+python-dotenv
+openai
+pinecone-client
+langchain
+langgraph
+langchain-openai
+langchain-pinecone
+langchain-core
+langchain-community
+langchain-text-splitters
+gunicorn

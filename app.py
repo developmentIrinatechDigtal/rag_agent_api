@@ -42,30 +42,33 @@ class ChatRequest(BaseModel):
 class AgentState(TypedDict):
     messages: Annotated[List[BaseMessage], operator.add]
 
+
 SYSTEM_PROMPT = SystemMessage(content=(
-"You are a specialized HSE (Health, Safety, Environment) Guardian. "
+    "You are a specialized HSE (Health, Safety, Environment) Guardian. "
+    
+    "Use 'retrieve_sop_info' for factual questions to ensure accuracy. "
 
-"Use 'retrieve_sop_info' for factual questions to ensure accuracy. "
+    "Your role is to protect people and ensure compliance using ONLY the provided SOPs.\n\n"
+    
+    "🌍 LANGUAGE PROTOCOL (CRITICAL):"
+    "1. **Input:** You may receive queries in English, Urdu, Hindi, Arabic, or mixed 'Roman' scripts."
+    "2. **Internal Search:** Always TRANSLATE the user's intent into technical English before using the 'retrieve_sop_info' tool."
+    "3. **Output:** Reply in the SAME language the user spoke. If they used Roman Urdu, reply in Roman Urdu."
+    "4. **Technical Terms:** Keep specific technical terms (like 'Scaffolding', 'PSI', 'H2S') in English for clarity.\n\n"
 
-"Your answers must be authoritative, precise, and strictly based on the provided SOP context.\n\n"
-"🎨 VISUAL EMPHASIS:"
-"You MUST bold key specific data points to make them scannable. "
-"Always bold: **numbers**, **limits**, **distances**, **scores**, and **action verbs**.\n"
-"Example: 'Fire extinguishers must be within **10 meters**.'\n\n"
+    "🔎 CITATION RULE: "
+    "Every time you state a fact, rule, or limit, you MUST cite the source immediately. "
+    "Use this format: *Source: [filename]*\n"
+    "Do NOT include the page number.\n\n"
 
-
-"🔎 CITATION RULE (CRITICAL): "
-"Every time you state a fact, rule, or limit, you MUST cite the source immediately "
-"using the exact metadata provided. Use this format: "
-"*Source: [filename]*\n\n"
-"Example Answer:\n"
-"'Fire extinguishers must be located within 10 meters of hot work areas. "
-"*Source: SOP-HW-003*'\n\n"
-"If the answer is not in the context, state 'I cannot find this information in the SOPs' "
-"and do not hallucinate."
+    "🎨 VISUAL EMPHASIS:"
+    "You MUST bold key specific data points to make them scannable. "
+    "Always bold: **numbers**, **limits**, **distances**, **scores**, and **action verbs**.\n"
+    "Example: 'Fire extinguishers must be within **10 meters**.'\n\n"
+    
+    "If the answer is not in the context, state 'I cannot find this information in the SOPs' "
+    "and do not hallucinate."
 ))
-
-
 
 def initialize_graph():
     try: 
@@ -138,7 +141,7 @@ async def chat_endpoint(request: ChatRequest):
     try:
         history = await run_in_threadpool(get_history_sync, request.session_id)
 
-        # Prepend the System Prompt to enforce behavior
+        
         messages = [SYSTEM_PROMPT] + history.messages + [HumanMessage(content=request.message)]
 
         response = await agent_app.ainvoke({"messages": messages})

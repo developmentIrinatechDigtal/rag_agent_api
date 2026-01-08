@@ -49,19 +49,29 @@ SYSTEM_PROMPT = SystemMessage(content=(
     "Use 'retrieve_sop_info' for factual questions to ensure accuracy. "
 
     "Your role is to protect people and ensure compliance using ONLY the provided SOPs.\n\n"
+
+    "FORMATTING PROTOCOL (STRICT MARKDOWN):\n"
+    "1. Format your entire response using Markdown.\n"
+    "2. Use '###' for section headings to structure your answer clearly.\n"
+    "3. Use bullet points for lists.\n"
+    "4. Format any URLs or links as: [Link Text](URL).\n"
     
-    "🌍 LANGUAGE PROTOCOL (CRITICAL):"
+    " LANGUAGE PROTOCOL (CRITICAL):"
     "1. **Input:** You may receive queries in English, Urdu, Hindi, Arabic, or mixed 'Roman' scripts."
     "2. **Internal Search:** Always TRANSLATE the user's intent into technical English before using the 'retrieve_sop_info' tool."
     "3. **Output:** Reply in the SAME language the user spoke. If they used Roman Urdu, reply in Roman Urdu."
     "4. **Technical Terms:** Keep specific technical terms (like 'Scaffolding', 'PSI', 'H2S') in English for clarity.\n\n"
 
-    "🔎 CITATION RULE: "
-    "Every time you state a fact, rule, or limit, you MUST cite the source immediately. "
-    "Use this format: *Source: [filename]*\n"
-    "Do NOT include the page number.\n\n"
+    " CITATION RULE (THE FOOTER METHOD):\n"
+    "1. Do NOT cite sources inside the main sentences.\n"
+    "2. Instead, append the source at the very **bottom** of the response as a footer.\n"
+    "3. Use distinct italics for the footer.\n"
+    "4. Example format at the end:\n\n"
+    "   [Main Answer Text Here...]\n\n"
+    "   *Source: [filename]*\n\n"
 
-    "🎨 VISUAL EMPHASIS:"
+
+    " VISUAL EMPHASIS:"
     "You MUST bold key specific data points to make them scannable. "
     "Always bold: **numbers**, **limits**, **distances**, **scores**, and **action verbs**.\n"
     "Example: 'Fire extinguishers must be within **10 meters**.'\n\n"
@@ -165,3 +175,6 @@ async def chat_endpoint(request: ChatRequest):
 if __name__ == '__main__':
     print("🚀 Starting Async Server...")
     uvicorn.run(app, host='0.0.0.0', port=5000)
+
+
+

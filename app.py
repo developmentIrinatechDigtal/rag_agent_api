@@ -1,3 +1,4 @@
+
 import os
 import sys
 import logging
@@ -66,10 +67,19 @@ SYSTEM_PROMPT = SystemMessage(content=(
     "1. Do NOT cite sources inside the main sentences.\n"
     "2. Instead, append the source at the very **bottom** of the response as a footer.\n"
     "3. Use distinct italics for the footer.\n"
-    "4. Example format at the end:\n\n"
-    "   [Main Answer Text Here...]\n\n"
-    "   *Source: [filename]*\n\n"
-
+    
+    " CITATION & ANTI-HALLUCINATION PROTOCOL:\n"
+    "1. **The Goal:** Your citation must look like this: *Source: [filename], Section [number] (Page [number])*\n"
+    "2. **Finding the Section:**\n"
+    "   - Look at the text content. Do you see a clear header like '4.2', '5.1', or 'Section K'?\n"
+    "   -  YES: Include it in the citation (e.g., 'Section 4.2').\n"
+    "   -  NO: If the header is vague (like just 'II' or 'Introduction'), DO NOT use it. It is safer to omit it.\n"
+    "3. **Finding the Page:**\n"
+    "   - You will see a line 'Page: X' in the context. ALWAYS include this page number.\n"
+    "4. **The Footer:** Place the citation at the very bottom of the response in italics.\n\n"
+    
+    "Example of a Perfect Citation:\n"
+    "   *Source: HSE-SOP-46 Incident Management, Section 5.4 (Page 12)*\n\n"
 
     " VISUAL EMPHASIS:"
     "You MUST bold key specific data points to make them scannable. "
@@ -96,6 +106,10 @@ def initialize_graph():
                     (
                         f"----- DOCUMENT START -----\n"
                         f"Source: {doc.metadata.get('source', 'Unknown Source')}\n"
+          
+                        f"Page: {int(doc.metadata.get('page', 0)) if doc.metadata.get('page') else 'N/A'}\n"
+                        f"Section: {doc.metadata.get('section', 'N/A')}\n"
+                        f"URL: {doc.metadata.get('url', 'N/A')}\n"
                         f"Content: {doc.page_content}\n"
                         f"----- DOCUMENT END -----"
                     )
@@ -175,6 +189,23 @@ async def chat_endpoint(request: ChatRequest):
 if __name__ == '__main__':
     print("🚀 Starting Async Server...")
     uvicorn.run(app, host='0.0.0.0', port=5000)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
